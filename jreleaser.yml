@@ -1,0 +1,74 @@
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
+# distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+project:
+  name: "mifos-commons-boot"
+  version: "0.1.0-SNAPSHOT"
+  license: "MPL-2.0"
+  inceptionYear: "2026"
+  vendor: "Mifos Initiative"
+  copyright: "Copyright (c) 2026 Mifos Initiative"
+  authors:
+    - "Aleksandar Vidakovic"
+  links:
+    bugTracker: "https://mifosforge.jira.com"
+    contribute: "https://mifos.org"
+    documentation: "https://docs.mifos.org"
+    donation: "https://mifos.org/take-action/donation-options"
+    faq: "https://mifos.org/resources/support"
+    contact: "https://mifos.org/about-us/contact-us"
+
+signing:
+  pgp:
+    active: ALWAYS
+    armored: true
+
+catalog:
+  sbom:
+    syft:
+      active: ALWAYS
+  swid:
+    mifos:
+      active: ALWAYS
+
+release:
+  github:
+    enabled: true
+    # TODO: change this to openMf
+    owner: "monkeysintown"
+    tagName: v{{projectVersion}}
+    overwrite: true
+    commitAuthor:
+      name: "Aleksandar Vidakovic"
+      email: "aleks@mifos.org"
+
+deploy:
+  maven:
+    artifactory:
+      mifos:
+        active: ALWAYS
+        url: "https://mifos.jfrog.io/artifactory/mifosx-gradle-local"
+        authorization: BEARER
+        snapshotSupported: true
+        applyMavenCentralRules: false
+        stagingRepositories:
+          - "modules/common/core/build/staging-deploy"
+          - "modules/mfg/core/build/staging-deploy"
+          - "modules/mfg/starter/build/staging-deploy"
+          - "modules/mfg/service/maven/core/build/staging-deploy"
+          - "modules/mfg/service/maven/implementation/build/staging-deploy"
+          - "modules/mfg/service/maven/starter/build/staging-deploy"
+          - "modules/mfg/service/pebble/core/build/staging-deploy"
+          - "modules/mfg/service/pebble/implementation/build/staging-deploy"
+          - "modules/mfg/service/pebble/starter/build/staging-deploy"
+          - "modules/mfg/service/yml/core/build/staging-deploy"
+          - "modules/mfg/service/yml/implementation/build/staging-deploy"
+          - "modules/mfg/service/yml/starter/build/staging-deploy"
+          - "modules/mfg/usecase/standard/core/build/staging-deploy"
+          - "modules/mfg/usecase/standard/implementation/build/staging-deploy"
+          - "modules/mfg/usecase/standard/starter/build/staging-deploy"
+          - "modules/mfg/cli/pico/standard/core/build/staging-deploy"
+          - "modules/mfg/cli/pico/standard/implementation/build/staging-deploy"
+          - "modules/mfg/cli/pico/standard/starter/build/staging-deploy"

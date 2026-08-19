@@ -1,0 +1,18 @@
+///
+/// This Source Code Form is subject to the terms of the Mozilla Public
+/// License, v. 2.0. If a copy of the MPL was not distributed with this
+/// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+///
+package org.mifos.tools.mfg.core.service;
+
+import java.io.InputStream;
+import java.nio.file.Path;
+import org.mifos.tools.mfg.core.model.MfgTemplateIndexData;
+
+public interface MfgTemplateIndexService {
+    MfgTemplateIndexData index(Path filePath);
+
+    MfgTemplateIndexData parse(InputStream data);
+
+    void validate(MfgTemplateIndexData index);
+}
