@@ -1,0 +1,35 @@
+# Mifos Marketplace — Local Development Stack
+# Starts the PostgreSQL database required for local development.
+#
+# Usage:
+#   docker compose up -d        # Start in background
+#   docker compose down -v      # Stop and remove volumes
+#   docker compose logs -f      # Follow logs
+
+name: mifos-marketplace
+
+services:
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: mifos-marketplace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mifos_marketplace
+      POSTGRES_USER: mifos
+      POSTGRES_PASSWORD: mifos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./.mifos/config/postgresql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mifos -d mifos_marketplace"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: mifos-marketplace-postgres-data

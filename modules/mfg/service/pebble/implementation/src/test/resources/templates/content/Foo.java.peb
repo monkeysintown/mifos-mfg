@@ -1,0 +1,5 @@
+public class Foo{{ className }} {{ '{' }}
+    public void greet() {{ '{' }}
+        System.out.println("FOO: Hello, world!");
+    {{ '}' }}
+{{ '}' }}

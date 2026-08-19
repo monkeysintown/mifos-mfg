@@ -1,0 +1,29 @@
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+# debug: true
+spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=600s
+    cache-names: template,dependency
+  main:
+    banner-mode: CONSOLE
+  devtools:
+    add-properties: false
+mifos:
+  banner: Fast Generator
+  commons:
+    debug:
+      cache-caffeine-enabled: true
+logging:
+  level:
+    root: OFF
+    org.mifos.commons.boot.debug.cache: DEBUG
+    # org.springframework: ERROR
+    # org.hibernate: ERROR
+    # com.zaxxer.hikari: ERROR

@@ -1,0 +1,58 @@
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+metadata:
+  name: Spring Boot REST Service
+  version: 1.0.0
+  description: Generates a complete RESTful service with Spring Boot
+  author: Mifos Initiative
+
+parameters:
+  - name: serviceName
+    type: STRING
+    required: true
+    description: Name of the REST service
+    default: MyService
+    pattern: "^[A-Za-z][A-Za-z0-9]*$"
+    message: Service name must start with a letter and contain only alphanumeric characters
+
+  - name: databaseType
+    type: ENUM
+    options: ["mysql", "postgresql", "h2"]
+    required: false
+    default: h2
+    description: Type of database to configure
+
+  - name: enableSecurity
+    type: BOOL
+    required: false
+    default: false
+    description: Include Spring Security configuration
+
+  - name: port
+    type: INT
+    required: false
+    default: 8080
+    min: 1024
+    max: 65535
+    description: Server port number
+
+files:
+  - path: "src/main/java/{{serviceName}}/Application.java"
+    template: "Application.peb"
+    type: PEBBLE
+
+  - path: "src/main/java/{{serviceName}}/controller/{{serviceName}}Controller.java"
+    template: "Controller.peb"
+    type: PEBBLE
+
+  - path: "src/main/resources/application.properties"
+    template: "application.properties"
+    type: RAW
+
+  - path: "build.gradle"
+    template: "build.gradle.peb"
+    type: PEBBLE

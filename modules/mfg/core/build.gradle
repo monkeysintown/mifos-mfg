@@ -1,0 +1,3 @@
+dependencies {
+    api project(":mifos-tools-common-core")
+}
