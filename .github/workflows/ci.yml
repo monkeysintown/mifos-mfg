@@ -1,0 +1,141 @@
+# Mifos Marketplace — Continuous Integration
+#
+# Runs on every push and pull request to main and feature branches.
+# Ensures the project compiles cleanly and all tests pass.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feat/**'
+      - 'fix/**'
+      - 'chore/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    name: Build, Static Analysis & Test
+    runs-on: ubuntu-latest
+
+    env:
+      # Personal JFrog — mfms.jfrog.io (Mifos Marketplace artifacts)
+      MFMS_JFROG_USERNAME: ${{ secrets.MFMS_JFROG_USERNAME }}
+      MFMS_JFROG_TOKEN: ${{ secrets.MFMS_JFROG_TOKEN }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 25 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          # No Gradle cache — SNAPSHOT dependencies change frequently and a
+          # stale cache causes "Could not find *-SNAPSHOT.jar" failures when
+          # the upstream timestamp changes between CI runs.
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+      - name: Configure JFrog credentials (Gradle init script)
+        # Injects credentials for the personal JFrog (mfms.jfrog.io) into a
+        # Gradle init script so all subprojects can resolve and publish artifacts.
+        # mifos.jfrog.io (mentor's JFrog) is accessed anonymously — no secrets needed.
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/jfrog-credentials.gradle <<'EOF'
+          allprojects {
+            buildscript {
+              repositories {
+                mavenCentral()
+                mavenLocal()
+                gradlePluginPortal()
+                maven {
+                  url = uri("https://central.sonatype.com/repository/maven-snapshots")
+                }
+                // Mentor's JFrog — anonymous read (convention plugins & shared libs)
+                maven {
+                  url = uri("https://mifos.jfrog.io/artifactory/mifosx-gradle-local")
+                }
+              }
+            }
+            repositories {
+              mavenCentral()
+              mavenLocal()
+              maven {
+                url = uri("https://central.sonatype.com/repository/maven-snapshots")
+              }
+              // Mentor's JFrog — anonymous read (convention plugins & shared libs)
+              maven {
+                url = uri("https://mifos.jfrog.io/artifactory/mifosx-gradle-local")
+              }
+              // Personal JFrog — mfms.jfrog.io (Mifos Marketplace artifacts)
+              maven {
+                url = uri("https://mfms.jfrog.io/artifactory/mifos-marketplace")
+                credentials {
+                  username = System.getenv("MFMS_JFROG_USERNAME") ?: ""
+                  password = System.getenv("MFMS_JFROG_TOKEN") ?: ""
+                }
+              }
+            }
+          }
+          EOF
+
+      - name: Run Unit & Integration Tests
+        # Scoped to modules we own — avoids the broken SNAPSHOT on mentor's JFrog:
+        # mifos-commons-java-boot-starter-imperative:0.1.0-20260725.095002-1.jar
+        # exists in maven-metadata.xml as "latest" but the actual JAR was deleted.
+        # The app-backend and integration-starter transitively pull it in.
+        # TODO: switch back to ./gradlew test once mentor fixes their JFrog publish.
+        run: |
+          ./gradlew \
+            :marketplace-common-core:test \
+            :marketplace-marketplace-core:test \
+            :marketplace-marketplace-persistence-relational:test \
+            :marketplace-marketplace-service-listing-core:test \
+            :marketplace-marketplace-service-listing-implementation:test \
+            --no-daemon --parallel --refresh-dependencies --no-configuration-cache
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Assemble Artifacts
+        run: |
+          ./gradlew \
+            :marketplace-common-core:assemble \
+            :marketplace-marketplace-core:assemble \
+            :marketplace-marketplace-persistence-relational:assemble \
+            :marketplace-marketplace-service-listing-core:assemble \
+            :marketplace-marketplace-service-listing-implementation:assemble \
+            --no-daemon --no-configuration-cache
+
+      - name: Verify CLI Executable Sanity
+        run: ./gradlew :marketplace-tools-application-cli:run --args="--help" --no-daemon --no-configuration-cache
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
+          retention-days: 7

@@ -1,0 +1,154 @@
+project:
+  name: "mifos-marketplace"
+  version: "0.1.0-SNAPSHOT"
+  license: "MPL-2.0"
+  inceptionYear: "2026"
+  vendor: "Mifos Initiative"
+  copyright: "Copyright (c) 2026 Mifos Initiative"
+  authors:
+    - "Hossam Hatem"
+    - "Aleksandar Vidakovic"
+  links:
+    bugTracker: "https://mifosforge.jira.com"
+    contribute: "https://mifos.org"
+    documentation: "https://docs.mifos.org"
+    donation: "https://mifos.org/take-action/donation-options"
+    faq: "https://mifos.org/resources/support"
+    contact: "https://mifos.org/about-us/contact-us"
+
+signing:
+  pgp:
+    active: ALWAYS
+    armored: true
+
+catalog:
+  sbom:
+    syft:
+      active: ALWAYS
+  swid:
+    mifos:
+      active: ALWAYS
+
+release:
+  github:
+    enabled: true
+    owner: "openMf"
+    tagName: v{{projectVersion}}
+    overwrite: true
+    commitAuthor:
+      name: "Hossam Hatem"
+      email: "hossam@mifos.org"
+
+deploy:
+  maven:
+    artifactory:
+      mifos:
+        active: ALWAYS
+        url: "https://mfms.jfrog.io/artifactory/mifos-marketplace-local"
+        username: "{{env.JFROG_USERNAME}}"
+        password: "{{env.JFROG_TOKEN}}"
+        authorization: BEARER
+        snapshotSupported: true
+        applyMavenCentralRules: false
+        stagingRepositories:
+          - "modules/common/core/build/staging-deploy"
+          - "modules/billing/core/build/staging-deploy"
+          - "modules/billing/mapping/build/staging-deploy"
+          - "modules/billing/persistence/relational/core/build/staging-deploy"
+          - "modules/billing/persistence/relational/implementation/build/staging-deploy"
+          - "modules/billing/persistence/relational/starter/build/staging-deploy"
+          # - "modules/billing/usecase/stripe/core/build/staging-deploy"
+          # - "modules/billing/usecase/stripe/implementation/build/staging-deploy"
+          # - "modules/billing/usecase/stripe/starter/build/staging-deploy"
+          - "modules/billing/starter/build/staging-deploy"
+          - "modules/catalog/core/build/staging-deploy"
+          - "modules/catalog/mapping/build/staging-deploy"
+          - "modules/catalog/persistence/relational/core/build/staging-deploy"
+          - "modules/catalog/persistence/relational/implementation/build/staging-deploy"
+          - "modules/catalog/persistence/relational/starter/build/staging-deploy"
+          # - "modules/catalog/usecase/xxx/core/build/staging-deploy"
+          # - "modules/catalog/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/catalog/usecase/xxx/starter/build/staging-deploy"
+          - "modules/catalog/starter/build/staging-deploy"
+          - "modules/content/core/build/staging-deploy"
+          - "modules/content/mapping/build/staging-deploy"
+          - "modules/content/persistence/relational/core/build/staging-deploy"
+          - "modules/content/persistence/relational/implementation/build/staging-deploy"
+          - "modules/content/persistence/relational/starter/build/staging-deploy"
+          # - "modules/content/usecase/xxx/core/build/staging-deploy"
+          # - "modules/content/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/content/usecase/xxx/starter/build/staging-deploy"
+          - "modules/content/starter/build/staging-deploy"
+          - "modules/customer/core/build/staging-deploy"
+          - "modules/customer/mapping/build/staging-deploy"
+          - "modules/customer/persistence/relational/core/build/staging-deploy"
+          - "modules/customer/persistence/relational/implementation/build/staging-deploy"
+          - "modules/customer/persistence/relational/starter/build/staging-deploy"
+          # - "modules/customer/usecase/xxx/core/build/staging-deploy"
+          # - "modules/customer/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/customer/usecase/xxx/starter/build/staging-deploy"
+          - "modules/customer/starter/build/staging-deploy"
+          - "modules/inventory/core/build/staging-deploy"
+          - "modules/inventory/mapping/build/staging-deploy"
+          - "modules/inventory/persistence/relational/core/build/staging-deploy"
+          - "modules/inventory/persistence/relational/implementation/build/staging-deploy"
+          - "modules/inventory/persistence/relational/starter/build/staging-deploy"
+          # - "modules/inventory/usecase/xxx/core/build/staging-deploy"
+          # - "modules/inventory/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/inventory/usecase/xxx/starter/build/staging-deploy"
+          - "modules/inventory/starter/build/staging-deploy"
+          - "modules/license/core/build/staging-deploy"
+          - "modules/license/mapping/build/staging-deploy"
+          - "modules/license/persistence/relational/core/build/staging-deploy"
+          - "modules/license/persistence/relational/implementation/build/staging-deploy"
+          - "modules/license/persistence/relational/starter/build/staging-deploy"
+          # - "modules/license/usecase/xxx/core/build/staging-deploy"
+          # - "modules/license/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/license/usecase/xxx/starter/build/staging-deploy"
+          - "modules/license/starter/build/staging-deploy"
+          - "modules/order/core/build/staging-deploy"
+          - "modules/order/mapping/build/staging-deploy"
+          - "modules/order/persistence/relational/core/build/staging-deploy"
+          - "modules/order/persistence/relational/implementation/build/staging-deploy"
+          - "modules/order/persistence/relational/starter/build/staging-deploy"
+          # - "modules/order/usecase/xxx/core/build/staging-deploy"
+          # - "modules/order/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/order/usecase/xxx/starter/build/staging-deploy"
+          - "modules/order/starter/build/staging-deploy"
+          - "modules/shipping/core/build/staging-deploy"
+          - "modules/shipping/mapping/build/staging-deploy"
+          - "modules/shipping/persistence/relational/core/build/staging-deploy"
+          - "modules/shipping/persistence/relational/implementation/build/staging-deploy"
+          - "modules/shipping/persistence/relational/starter/build/staging-deploy"
+          # - "modules/shipping/usecase/xxx/core/build/staging-deploy"
+          # - "modules/shipping/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/shipping/usecase/xxx/starter/build/staging-deploy"
+          - "modules/shipping/starter/build/staging-deploy"
+          - "modules/vendor/core/build/staging-deploy"
+          - "modules/vendor/mapping/build/staging-deploy"
+          - "modules/vendor/persistence/relational/core/build/staging-deploy"
+          - "modules/vendor/persistence/relational/implementation/build/staging-deploy"
+          - "modules/vendor/persistence/relational/starter/build/staging-deploy"
+          # - "modules/vendor/usecase/xxx/core/build/staging-deploy"
+          # - "modules/vendor/usecase/xxx/implementation/build/staging-deploy"
+          # - "modules/vendor/usecase/xxx/starter/build/staging-deploy"
+          - "modules/vendor/starter/build/staging-deploy"
+          - "modules/infrastructure/application/backend/implementation/build/staging-deploy"
+          - "modules/infrastructure/application/cli/implementation/build/staging-deploy"
+          - "modules/infrastructure/application/migration/implementation/build/staging-deploy"
+
+#    mavenCentral:
+#      app:
+#        active: ALWAYS
+#        url: https://central.sonatype.com/api/v1/publisher
+#        stagingRepository: build/staging-deploy
+
+#    nexus2:
+#      snapshot-deploy:
+#        active: SNAPSHOT
+#        snapshotUrl: "https://central.sonatype.com/repository/maven-snapshots"
+#        applyMavenCentralRules: true
+#        snapshotSupported: true
+#        closeRepository: true
+#        releaseRepository: false
+#        stagingRepository: "build/staging-deploy"

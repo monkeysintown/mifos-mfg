@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral().content {
+            excludeModule("javax.media", "jai_core")
+        }
+        gradlePluginPortal()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots")
+        }
+        maven {
+            url = uri("https://mifos.jfrog.io/artifactory/mifosx-gradle-local")
+        }
+    }
+
+    dependencies {
+        classpath "org.mifos.conventions:mifos-conventions-gradle-boot-layout:0.1.0-SNAPSHOT"
+    }
+}
+
+apply plugin: "org.mifos.conventions.gradle.boot.layout"
+
+rootProject.name = "mifos-mfg"
+
+mifos {
+    project {
+        groupId = "org.mifos.mfg"
+        description = "Mifos Fast Generator"
+        basePackage = "org.mifos.mfg"
+        basePath = "org/mifos/mfg"
+        inceptionYear = "2026"
+    }
+    developers {
+        "vidakovic" {
+            firstname = "Aleksandar"
+            lastname = "Vidakovic"
+            email = "aleks@mifos.org"
+            timezone = "UTC+2"
+            roles = ["developer", "architect"]
+        }
+    }
+}

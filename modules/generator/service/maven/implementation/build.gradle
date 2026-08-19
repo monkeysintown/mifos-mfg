@@ -1,0 +1,4 @@
+dependencies {
+    api "org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-depchain"
+    implementation "org.apache.maven:plexus-utils"
+}

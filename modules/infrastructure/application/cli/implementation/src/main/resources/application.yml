@@ -1,0 +1,5 @@
+spring:
+  devtools:
+    add-properties: false
+mifos:
+  banner: Fast Generator

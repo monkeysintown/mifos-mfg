@@ -1,0 +1,117 @@
+# Mifos Marketplace — Release
+#
+# Triggers on version tags (v*) or manual dispatch.
+# Builds all modules, publishes to local Maven staging, then
+# hands off to JReleaser which deploys to JFrog Artifactory,
+# creates a GitHub Release, signs artifacts with PGP, and
+# generates SBOM catalogs (Syft + SWID).
+#
+# Secrets are defined at the organization level — no per-repo
+# configuration needed once the repo is under openMf.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 0.1.0)'
+        required: true
+        default: ''
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+
+  release:
+    name: Build & Release via JReleaser
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 25 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+
+      - name: Configure JFrog Artifactory & Maven Central repositories
+        env:
+          JFROG_USER: ${{ secrets.JFROG_USER }}
+          JFROG_API_TOKEN: ${{ secrets.JFROG_API_TOKEN }}
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/jfrog-credentials.gradle <<'EOF'
+          allprojects {
+            buildscript {
+              repositories {
+                mavenCentral()
+                mavenLocal()
+                gradlePluginPortal()
+                maven {
+                  url = uri("https://central.sonatype.com/repository/maven-snapshots")
+                }
+                maven {
+                  url = uri("https://mifos.jfrog.io/artifactory/mifosx-gradle-local")
+                  credentials {
+                    username = System.getenv("JFROG_USER") ?: ""
+                    password = System.getenv("JFROG_API_TOKEN") ?: ""
+                  }
+                }
+              }
+            }
+            repositories {
+              mavenCentral()
+              mavenLocal()
+              maven {
+                url = uri("https://central.sonatype.com/repository/maven-snapshots")
+              }
+              maven {
+                url = uri("https://mifos.jfrog.io/artifactory/mifosx-gradle-local")
+                credentials {
+                  username = System.getenv("JFROG_USER") ?: ""
+                  password = System.getenv("JFROG_API_TOKEN") ?: ""
+                }
+              }
+            }
+          }
+          EOF
+
+      - name: Build & Publish to Local Staging
+        env:
+          JFROG_USER: ${{ secrets.JFROG_USER }}
+          JFROG_API_TOKEN: ${{ secrets.JFROG_API_TOKEN }}
+        run: ./gradlew publishToMavenLocal --no-daemon
+
+      - name: Run JReleaser
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_JFROG_USER: ${{ secrets.JFROG_USER }}
+          JRELEASER_JFROG_PASSWORD: ${{ secrets.JFROG_API_TOKEN }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        with:
+          arguments: release --config-file jreleaser.yml
+
+      - name: Upload JReleaser logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-logs
+          path: out/jreleaser/
+          retention-days: 7
