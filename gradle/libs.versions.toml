@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/version_catalogs.html#sec::toml-dependencies-format
 
 [versions]
-spock-core = "2.3-groovy-4.0"
+spock-core = "2.4-groovy-4.0"
 
 [libraries]
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock-core" }
