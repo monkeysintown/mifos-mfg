@@ -7,6 +7,8 @@ package org.mifos.tools.mfg.service.yml.starter;
 
 import static org.mifos.tools.mfg.service.yml.core.YmlTemplateIndexServiceConstants.MIFOS_TOOLS_MFG_SERVICE_YML_CORE_PACKAGE;
 import static org.mifos.tools.mfg.service.yml.core.YmlTemplateIndexServiceConstants.MIFOS_TOOLS_MFG_SERVICE_YML_IMPLEMENTATION_PACKAGE;
+import static tools.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
+import static tools.jackson.dataformat.yaml.YAMLReadFeature.EMPTY_STRING_AS_NULL;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,9 @@ import tools.jackson.dataformat.yaml.YAMLMapper;
 final class YmlTemplateIndexServiceAutoConfiguration {
     @Bean
     YAMLMapper yamlMapper() {
-        return YAMLMapper.builder().build();
+        return YAMLMapper.builder()
+                .disable(EMPTY_STRING_AS_NULL)
+                .disable(FAIL_ON_EMPTY_BEANS)
+                .build();
     }
 }

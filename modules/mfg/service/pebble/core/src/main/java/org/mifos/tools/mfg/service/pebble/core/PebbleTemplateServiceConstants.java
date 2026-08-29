@@ -15,8 +15,6 @@ public class PebbleTemplateServiceConstants {
             MIFOS_TOOLS_MFG_SERVICE_PACKAGE_BASE + ".pebble";
     public static final String MIFOS_TOOLS_MFG_SERVICE_PEBBLE_CORE_PACKAGE =
             MIFOS_TOOLS_MFG_SERVICE_PEBBLE_PACKAGE_BASE + ".core";
-    public static final String MIFOS_TOOLS_MFG_SERVICE_PEBBLE_MAPPING_PACKAGE =
-            MIFOS_TOOLS_MFG_SERVICE_PEBBLE_PACKAGE_BASE + ".mapping";
     public static final String MIFOS_TOOLS_MFG_SERVICE_PEBBLE_IMPLEMENTATION_PACKAGE =
             MIFOS_TOOLS_MFG_SERVICE_PEBBLE_PACKAGE_BASE + ".implementation";
     public static final String MIFOS_TOOLS_MFG_SERVICE_PEBBLE_STARTER_PACKAGE =

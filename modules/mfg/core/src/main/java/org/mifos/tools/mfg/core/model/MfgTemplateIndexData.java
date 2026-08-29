@@ -9,6 +9,7 @@ import static java.util.Objects.isNull;
 import static org.mifos.tools.mfg.core.exception.MfgException.MifosGeneratorErrorCode.MIFOS_TOOLS_MFG_TEMPLATE_ERROR_INDEX;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.experimental.FieldNameConstants;
 import org.mifos.commons.boot.core.model.MifosError;
 import org.mifos.tools.mfg.core.exception.MfgException;
@@ -31,8 +33,9 @@ public class MfgTemplateIndexData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private TemplateMetadata metadata;
-    private List<TemplateParameter> parameters;
-    private List<TemplateFileDefinition> files;
+
+    @Singular
+    private List<TemplateGroup> groups;
 
     @Builder
     @Data
@@ -47,6 +50,27 @@ public class MfgTemplateIndexData implements Serializable {
         private String version;
         private String description;
         private String author;
+    }
+
+    @Builder
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @FieldNameConstants
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class TemplateGroup implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private String name;
+
+        private String description;
+
+        @Singular
+        private List<TemplateParameter> parameters;
+
+        @Singular
+        private List<TemplateFileDefinition> files;
     }
 
     @Builder
